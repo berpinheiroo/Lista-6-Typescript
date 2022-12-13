@@ -1,119 +1,163 @@
-class Torre{
-    Nome: string = ""
-    Ataque: number = 0
-    Alcance:number = 0
-    Nivel: number = 0
-    Valor: number = 0
-    
+class Tower {
+    private Name: string
+    private Power: number
+    private Range: number
+    private Level: number
+    private Price: number
 
-    constructor(nome: string, ataque: number, alcance: number, nivel: number, valor: number){
-        this.Nome = nome
-        this.Ataque = ataque
-        this.Alcance = alcance
-        this.Nivel = nivel
-        this.Valor = valor
+    constructor(name: string, power: number, range: number, level: number, price: number) {
+        this.setName(name)
+        this.setPower(power)
+        this.setRange(range)
+        this.setLevel(level)
+        this.setPrice(price)
+    }
+    public setName(name: string): void {
+        this.Name = name
+    }
+    public getName(): string {
+        return this.Name
+    }
 
+    public  setPower(power: number): void {
+        this.Power = power
+    }
+    public getPower(): number {
+        return this.Power
+    }
+
+    public setRange(range: number): void {
+        this.Range = range
+    }
+    public getRange(): number {
+        return this.Range
+    }
+
+    public setLevel(level: number): void {
+        this.Level = level
+    }
+    public getLevel(): number {
+        return this.Level
+    }
+
+    public setPrice(price: number): void {
+        this.Price = price
+    }
+    public getPrice(): number {
+        return this.Price
     }
 }
 
-class Inimigo{
-    Nome: string = ""
-    Vida: number = 0
+class Enemy {
+    private Name: string
+    private HealthPoints: number
 
-    constructor(nome: string, vida: number){
-        this.Nome = nome
-        this.Vida = vida
-
+    constructor(name: string, HP: number) {
+        this.setName(name)
+        this.setHealthPoints(HP)
     }
 
-    public ReceberDano(ataque: number){
-        return this.Vida = this.Vida - ataque
+    public setName(name: string): void {
+        this.Name = name
+    }
+    public getName(): string {
+        return this.Name
     }
 
+    public setHealthPoints(HP: number): void {
+        this.HealthPoints = HP
+    }
+    public getHealthPoints(): number {
+        return this.HealthPoints
+    }
+
+    public TakeDamage(damage: number): number {
+        return this.HealthPoints = this.HealthPoints - damage
+    }
 }
 
-let torres: Torre[] = []
-let tabuleiro: (Inimigo | undefined)[] = [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,]
 
-torres.length = 10
-tabuleiro.length = 10
+let arrayTowerPlace: Tower[] = new Array(10)
+let arrayEnemyWay: (Enemy | undefined)[] = [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,]
+let arrayEnemy: Enemy[] = []
 
-AdicionarTorre(new Torre("Arco", 3, 2, 1, 10), 6)
+let Tower1 = new Tower("A", 3, 2, 1, 5)
+let Enemy1 = new Enemy("Goblin", 100)
 
-IniciarPartida(2)
+PutTower(Tower1,10)
+PutTower(Tower1,3)
 
-function AdicionarTorre(torre: Torre, posicao: number){
-    torres[posicao] = torre
+StartGame(10)
+
+function PutTower(tower: Tower, position: number): void {
+    if (position < 1 || position > 10) {
+        console.log("Número da casa inválida!")
+        return
+    } else {
+        arrayTowerPlace[position - 1] = tower
+        return
+    }
 }
 
-function IniciarPartida(inimigosTotais: number){
-    let vidas: number = 10
-    let numeroInimigos = inimigosTotais
-    let inimigosDerrotados = 0
-    let fimDeJogo: boolean = false
-
+function StartGame(totalMonsters: number): void {
+    let playerHP: number = 10
+    let defeatedMonsters : number = 0
+    let numberMonsters : number = totalMonsters
+    let gameOver : boolean = false
     do{
-        numeroInimigos = numeroInimigos - MovimentarInimigos(numeroInimigos)
-        vidas = vidas - VerificarAtaqueInimigo()
-        inimigosDerrotados = inimigosDerrotados + VerificarAtaqueInimigo()
-        inimigosDerrotados = inimigosDerrotados + AtaqueTorres()
-        console.log("Restam mais" + vidas + "vidas")
-        if(vidas <= 0){
-            fimDeJogo = true
-            console.log("Fim de jogo, suas vidas chegaram a zero e você perdeu!")
+        numberMonsters = numberMonsters - EnemyMoves(numberMonsters)
+        playerHP = playerHP - EnemyAttacks()
+        defeatedMonsters = defeatedMonsters + EnemyAttacks()
+        defeatedMonsters = defeatedMonsters + TowerAttacks()
+        console.log("Player HP - " +playerHP)
+        if(playerHP <= 0){
+            gameOver = true
+            console.log("YOU LOSE!")
+        }else if(defeatedMonsters == totalMonsters){
+            gameOver = true
+            console.log("YOU WIN!")
         }
-        else if(inimigosDerrotados == inimigosTotais){
-            fimDeJogo = true
-            console.log("Fim de jogo, você derrotou todos os inimigos e ganhou!")
-        }
-    }while(!fimDeJogo)
+    } while(!gameOver)
 }
-
-function MovimentarInimigos(numeroInimigos: number): number{
-    tabuleiro.shift()
-    if(numeroInimigos != 0){
-        tabuleiro[9] = new Inimigo("Cerberus", 10)
+ 
+function EnemyMoves(numberMonsters : number): number {
+    arrayEnemyWay!.shift()
+    if(numberMonsters != 0){
+        arrayEnemyWay![9] = Enemy1
         return 1
-    }
-    else{
-        tabuleiro[9] = undefined
+    }else{
+        arrayEnemyWay[9] = undefined
     }
     return 0
 }
 
-function VerificarAtaqueInimigo(): number{
-    if(tabuleiro[0] = undefined){
+function EnemyAttacks() : number{
+    if(arrayEnemyWay![0] != undefined){
         return 1
+    }else{
+        return 0
     }
-    return 0
 }
 
-function AtaqueTorres(): any{
-    let inimigosDerrotados = 0
-    torres.forEach((x, index) => {
-        if(x.Alcance == 1){
-            if(tabuleiro[index] != undefined){
-                return inimigosDerrotados = inimigosDerrotados + VerificarAbate(tabuleiro[index]!.ReceberDano(x.Ataque), index)
-            }
-        } else{
-            for (let i = index - (x.Alcance - 1); i <= index + (x.Alcance - 1); i++) {
-                if(tabuleiro[i] != undefined){
-                    return inimigosDerrotados = inimigosDerrotados + VerificarAbate(tabuleiro[i]!.ReceberDano(x.Ataque), i)
-
+function TowerAttacks() : number{
+    let defeatedMonsters : number = 0
+    arrayTowerPlace.forEach((x,index) => {
+            if(x.getRange() == 1 && arrayEnemyWay![index] != undefined){
+                return defeatedMonsters = defeatedMonsters + VerifyKill(arrayEnemyWay[index]!.TakeDamage(x.getPower()),index)
+            }else {
+                for(let i : number = (index - x.getRange() + 1); i <= (index + x.getRange() - 1); i++ ){
+                    if(arrayEnemyWay[i] != undefined)
+                    return defeatedMonsters = defeatedMonsters + VerifyKill(arrayEnemyWay[i]!.TakeDamage(x.getPower()), i)
                 }
-                
             }
-        }
-        
     })
-
+    return defeatedMonsters
 }
 
-function VerificarAbate(vida: number, posicao: number): number{
-    if(vida <= 0){
-        tabuleiro[posicao] = undefined
+function VerifyKill(HP : number, position : number) : number {
+    if(HP <= 0) {
+        arrayEnemyWay[position] = undefined
         return 1
     }
     return 0
-
 }
