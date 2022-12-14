@@ -1,141 +1,97 @@
-var Tower = /** @class */ (function () {
-    function Tower(name, power, range, level, price) {
-        this.setName(name);
-        this.setPower(power);
-        this.setRange(range);
-        this.setLevel(level);
-        this.setPrice(price);
+var Torre = /** @class */ (function () {
+    function Torre(nome, ataque, alcance, nivel, valor) {
+        this.Nome = "";
+        this.Ataque = 0;
+        this.Alcance = 0;
+        this.Nivel = 0;
+        this.Valor = 0;
+        this.Nome = nome;
+        this.Ataque = ataque;
+        this.Alcance = alcance;
+        this.Nivel = nivel;
+        this.Valor = valor;
     }
-    Tower.prototype.setName = function (name) {
-        this.Name = name;
-    };
-    Tower.prototype.getName = function () {
-        return this.Name;
-    };
-    Tower.prototype.setPower = function (power) {
-        this.Power = power;
-    };
-    Tower.prototype.getPower = function () {
-        return this.Power;
-    };
-    Tower.prototype.setRange = function (range) {
-        this.Range = range;
-    };
-    Tower.prototype.getRange = function () {
-        return this.Range;
-    };
-    Tower.prototype.setLevel = function (level) {
-        this.Level = level;
-    };
-    Tower.prototype.getLevel = function () {
-        return this.Level;
-    };
-    Tower.prototype.setPrice = function (price) {
-        this.Price = price;
-    };
-    Tower.prototype.getPrice = function () {
-        return this.Price;
-    };
-    return Tower;
+    return Torre;
 }());
-var Enemy = /** @class */ (function () {
-    function Enemy(name, HP) {
-        this.setName(name);
-        this.setHealthPoints(HP);
+var Inimigo = /** @class */ (function () {
+    function Inimigo(nome, vida) {
+        this.Nome = "";
+        this.Vida = 0;
+        this.Nome = nome;
+        this.Vida = vida;
     }
-    Enemy.prototype.setName = function (name) {
-        this.Name = name;
+    Inimigo.prototype.ReceberDano = function (ataque) {
+        return this.Vida = this.Vida - ataque;
     };
-    Enemy.prototype.getName = function () {
-        return this.Name;
-    };
-    Enemy.prototype.setHealthPoints = function (HP) {
-        this.HealthPoints = HP;
-    };
-    Enemy.prototype.getHealthPoints = function () {
-        return this.HealthPoints;
-    };
-    Enemy.prototype.TakeDamage = function (damage) {
-        return this.HealthPoints = this.HealthPoints - damage;
-    };
-    return Enemy;
+    return Inimigo;
 }());
-var arrayTowerPlace = new Array(10);
-var arrayEnemyWay = [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,];
-var arrayEnemy = [];
-var Tower1 = new Tower("A", 3, 2, 1, 5);
-var Enemy1 = new Enemy("Goblin", 100);
-PutTower(Tower1, 10);
-PutTower(Tower1, 3);
-StartGame(10);
-function PutTower(tower, position) {
-    if (position < 1 || position > 10) {
-        console.log("Número da casa inválida!");
-        return;
-    }
-    else {
-        arrayTowerPlace[position - 1] = tower;
-        return;
-    }
+var torres = [];
+var tabuleiro = [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,];
+torres.length = 10;
+tabuleiro.length = 10;
+AdicionarTorre(new Torre("Arco", 3, 2, 1, 10), 6);
+IniciarPartida(2);
+function AdicionarTorre(torre, posicao) {
+    torres[posicao] = torre;
 }
-function StartGame(totalMonsters) {
-    var playerHP = 10;
-    var defeatedMonsters = 0;
-    var numberMonsters = totalMonsters;
-    var gameOver = false;
+function IniciarPartida(inimigosTotais) {
+    var vidas = 10;
+    var numeroInimigos = inimigosTotais;
+    var inimigosDerrotados = 0;
+    var fimDeJogo = false;
     do {
-        numberMonsters = numberMonsters - EnemyMoves(numberMonsters);
-        playerHP = playerHP - EnemyAttacks();
-        defeatedMonsters = defeatedMonsters + EnemyAttacks();
-        defeatedMonsters = defeatedMonsters + TowerAttacks();
-        console.log("Player HP - " + playerHP);
-        if (playerHP <= 0) {
-            gameOver = true;
-            console.log("YOU LOSE!");
+        numeroInimigos = numeroInimigos - MovimentarInimigos(numeroInimigos);
+        vidas = vidas - VerificarAtaqueInimigo();
+        inimigosDerrotados = inimigosDerrotados + VerificarAtaqueInimigo();
+        inimigosDerrotados = inimigosDerrotados + AtaqueTorres();
+        console.log("Restam mais" + vidas + "vidas");
+        if (vidas <= 0) {
+            fimDeJogo = true;
+            console.log("Fim de jogo, suas vidas chegaram a zero e você perdeu!");
         }
-        else if (defeatedMonsters == totalMonsters) {
-            gameOver = true;
-            console.log("YOU WIN!");
+        else if (inimigosDerrotados == inimigosTotais) {
+            fimDeJogo = true;
+            console.log("Fim de jogo, você derrotou todos os inimigos e ganhou!");
         }
-    } while (!gameOver);
+    } while (!fimDeJogo);
 }
-function EnemyMoves(numberMonsters) {
-    arrayEnemyWay.shift();
-    if (numberMonsters != 0) {
-        arrayEnemyWay[9] = Enemy1;
+function MovimentarInimigos(numeroInimigos) {
+    tabuleiro.shift();
+    if (numeroInimigos != 0) {
+        tabuleiro[9] = new Inimigo("orc", 10);
         return 1;
     }
     else {
-        arrayEnemyWay[9] = undefined;
+        tabuleiro[9] = undefined;
     }
     return 0;
 }
-function EnemyAttacks() {
-    if (arrayEnemyWay[0] != undefined) {
+function VerificarAtaqueInimigo() {
+    if (tabuleiro[0] = undefined) {
         return 1;
     }
-    else {
-        return 0;
-    }
+    return 0;
 }
-function TowerAttacks() {
-    var defeatedMonsters = 0;
-    arrayTowerPlace.forEach(function (x, index) {
-        if (x.getRange() == 1 && arrayEnemyWay[index] != undefined) {
-            return defeatedMonsters = defeatedMonsters + VerifyKill(arrayEnemyWay[index].TakeDamage(x.getPower()), index);
+function AtaqueTorres() {
+    var inimigosDerrotados = 0;
+    torres.forEach(function (x, index) {
+        if (x.Alcance == 1) {
+            if (tabuleiro[index] != undefined) {
+                return inimigosDerrotados = inimigosDerrotados + VerificarAbate(tabuleiro[index].ReceberDano(x.Ataque), index);
+            }
         }
         else {
-            for (var i = (index - x.getRange() + 1); i <= (index + x.getRange() - 1); i++) {
-                if (arrayEnemyWay[i] != undefined)
-                    return defeatedMonsters = defeatedMonsters + VerifyKill(arrayEnemyWay[i].TakeDamage(x.getPower()), i);
+            for (var i = index - (x.Alcance - 1); i <= index + (x.Alcance - 1); i++) {
+                if (tabuleiro[i] != undefined) {
+                    return inimigosDerrotados = inimigosDerrotados + VerificarAbate(tabuleiro[i].ReceberDano(x.Ataque), i);
+                }
             }
         }
     });
-    return defeatedMonsters;
 }
-function VerifyKill(HP, position) {
-    if (HP <= 0) {
-        arrayEnemyWay[position] = undefined;
+function VerificarAbate(vida, posicao) {
+    if (vida <= 0) {
+        tabuleiro[posicao] = undefined;
         return 1;
     }
     return 0;
